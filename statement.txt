@@ -1,0 +1,10 @@
+PROJECT 5 (Argimiro). Graph-based Sentiment lexicon generation.
+One standard way of quantifying sentiment of text (e.g. if positive or negative) is a bag-of words approach where one estimates the proportion of positive/negative terms appearing in the text, and the knowledge of a term being positive/negative is given by a "sentiment dictionary": a set of key terms classified as positive/negative.
+This sentiment dictionary is hence a fundamental piece in this sentiment analysis process and constructing one is subject of much research. Many are built manually, but there are several semi-supervised or fully unsupervised methods. This project proposes to study and implement a semi-supervised method of building sentiment dictionaries based on word-networks (WordNet), given in this paper
+https://pdfs.semanticscholar.org/841c/52958004893b21bee9d6f8373e8a279f76c7.pdf
+By Rao and Ravichandra: Semi-supervised Polarity Lexicon induction
+(WordNet is available here: https://wordnet.princeton.edu/
+And, for example, the word network that would be of interest is that of synonyms)
+Some extensions of this project (after implementing the work by Rao et al) are:
+i) to include context-orientation to the polarity lexicon induction: positive/negative can be different according to context (e.g. financial texts as opposed to social news). I have a large dataset of financial news to test this variant.
+ii) to consider other polarities (besides positive/negative) such as: uncertainty/certainty; fear/hype, etc. This might depend on the seed of terms used from which to generate the dictionary.
