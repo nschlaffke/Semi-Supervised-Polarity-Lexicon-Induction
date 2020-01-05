@@ -28,6 +28,8 @@ def get_graph():
 
         for synonym_name in loadWordNet.getNames(synonyms):
             generateGraph.addEdgeIf(graph, base_lemma_name, synonym_name)
+    
+    graph.es['weight'] = [1]*len(graph.get_edgelist()) # TODO remove dummy way of adding weights
     return graph
 
 graph = get_graph()
