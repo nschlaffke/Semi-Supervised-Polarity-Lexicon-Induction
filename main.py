@@ -6,23 +6,30 @@ import igraph as ig
 
 import generateGraph
 import loadWordNet
+import labelProp
 
+from sklearn.externals.joblib import Memory
+
+memory = Memory(cachedir='./cache', verbose=0)
 # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
-words_synsets = list(wn.all_synsets(wn.ADJ))
 
-lemmas = loadWordNet.getAllLemmas(words_synsets)
+@memory.cache
+def get_graph():
+    words_synsets = list(wn.all_synsets(wn.ADJ))
 
-graph = generateGraph.createGraph(loadWordNet.getNames(lemmas))
+    lemmas = loadWordNet.getAllLemmas(words_synsets)[:100] # TODO remove word limit
 
-for lemma in lemmas:
-    base_lemma_name = loadWordNet.getName(lemma)
+    graph = generateGraph.createGraph(loadWordNet.getNames(lemmas))
 
-    synonyms = loadWordNet.findSynonymsLemma(lemma)
+    for lemma in lemmas:
+        base_lemma_name = loadWordNet.getName(lemma)
 
-    for synonym_name in loadWordNet.getNames(synonyms):
-        generateGraph.addEdgeIf(graph, base_lemma_name, synonym_name)
+        synonyms = loadWordNet.findSynonymsLemma(lemma)
 
-min_cut = generateGraph.getMinCut(graph, 'good', 'bad')
+        for synonym_name in loadWordNet.getNames(synonyms):
+            generateGraph.addEdgeIf(graph, base_lemma_name, synonym_name)
+    return graph
 
-print(min_cut[0])
-print(min_cut[1])
+graph = get_graph()
+
+label_prop = labelProp.performLabelProp(graph, ['abaxial'], ['abducent'])
