@@ -134,3 +134,6 @@ i.vscode/*
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+
+# Memory cache
+cache/
