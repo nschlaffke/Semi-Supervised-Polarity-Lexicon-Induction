@@ -6,7 +6,7 @@ def createGraph(words):
     return graph
 
 def addEdgeIf(graph, base_lemma_name, synonym_name):
-    if(len(graph.vs().select(synonym_name)) > 0 and not graph.are_connected(base_lemma_name, synonym_name)):
+    if(len(graph.vs().select(name=synonym_name)) > 0 and not graph.are_connected(base_lemma_name, synonym_name)):
         graph.add_edge(base_lemma_name, synonym_name)
 
 def getMinCut(graph, s, t):
