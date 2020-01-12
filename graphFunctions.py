@@ -25,6 +25,9 @@ def addNodeIfNotExists(graph, name):
     if(not checkVertexNameExists(graph, name)):
         graph.add_vertex(name)
 
+def getVerticesNames(graph, vertices_ids):
+    return ig.VertexSeq(graph, vertices_ids)["name"]
+
 def getMinCut(graph, s, t):
     s_id = graph.vs().find('good').index
     t_id = graph.vs().find('bad').index
@@ -37,7 +40,10 @@ def getMinCut(graph, s, t):
         graph.es()[edge_id]["capacity"] = 10000
 
     min_cut = graph.maxflow(s_id, t_id, "capacity")
-    return min_cut
+
+    positive_names = getVerticesNames(graph, min_cut[0])
+    negative_names = getVerticesNames(graph, min_cut[1])
+    return (positive_names, negative_names)
 
 
 if __name__ == "__main__":
