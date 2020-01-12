@@ -1,6 +1,7 @@
 from nltk.corpus import wordnet as wn
 from os import path
 import igraph as ig
+import queue as queueClass
 
 import graphFunctions
 import graphPlots
@@ -33,7 +34,7 @@ def graphCache(function):
 
     return new_function
 
- # Graph functions   
+# Graph functions   
 
 def getGraph(words_synsets):
     lemmas = loadWordNet.getAllLemmas(words_synsets)
@@ -51,6 +52,42 @@ def getGraph(words_synsets):
     graph.es()['weight'] = [1]*len(graph.get_edgelist()) # TODO remove dummy way of adding weights
     return graph
 
+class QueueObject:
+  def __init__(self, depth, synset):
+    self.depth = depth
+    self.synset = synset
+
+def getSynsetsDepth(words_synsets, max_depth):
+
+    new_words_synsets = set(words_synsets)
+    
+    queue = queueClass.Queue()
+    for synset in words_synsets:
+        queue.put(QueueObject(0, synset))
+    
+    while(not queue.empty()):
+        current = queue.get()
+        
+        if(current.depth > max_depth):
+            continue
+
+        synonyms = loadWordNet.findSynsetSynonymsSynset(current.synset)
+
+        for synonym in synonyms:
+            queue.put(QueueObject(current.depth + 1, synonym))
+            new_words_synsets.add(synonym)
+            
+    
+    return list(new_words_synsets)
+    
+# Get graph functions
+
+@graphCache
+def getFullGraph():
+    # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
+    words_synsets = list(wn.all_synsets())
+    return getGraph(words_synsets)
+
 @graphCache
 def getFullADJGraph():
     # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
@@ -59,11 +96,6 @@ def getFullADJGraph():
 
 @graphCache
 def getSmallADJGraph():
-    name = "smallAdjGraph"
-    storedGraph = readGraph(name)
-    if(storedGraph != None):
-        return storedGraph
-
     # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
     words_synsets = list(wn.all_synsets(wn.ADJ))[:500]
     return getGraph(words_synsets)
@@ -73,8 +105,12 @@ def getSmallADJGraph():
 
 if __name__ == "__main__":
     # memory.clear(warn=False)
-    g = getFullADJGraph()
+    # g = getFullGraph()
     # ig.plot(g)
     # print(graphFunctions.shortestPath(g, "good", "bad"))
     # graphPlots.plotWithLabels(g.subgraph(graphFunctions.shortestPath(g, "good", "bad")[0]))
     # storeGraph("fullAdjGraph", g)
+    good = wn.synset('good.a.01')
+    synsets = getSynsetsDepth([good], 1)
+    g = getGraph(synsets)
+    graphPlots.plotWithLabelsCustom(g)

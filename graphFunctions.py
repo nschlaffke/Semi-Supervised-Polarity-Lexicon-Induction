@@ -21,6 +21,10 @@ def addEdgeIf(graph, base_lemma_name, synonym_name):
             not graph.are_connected(base_lemma_name, synonym_name)):
         graph.add_edge(base_lemma_name, synonym_name)
 
+def addNodeIfNotExists(graph, name):
+    if(not checkVertexNameExists(graph, name)):
+        graph.add_vertex(name)
+
 def getMinCut(graph, s, t):
     s_id = graph.vs().find('good').index
     t_id = graph.vs().find('bad').index
