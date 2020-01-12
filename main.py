@@ -7,6 +7,9 @@ import igraph as ig
 import graphFunctions
 import generateGraph
 
-graph = generateGraph.getSmallADJGraph()
-graphFunctions.getMinCut(graph, "good", "bad")
+graph = generateGraph.getFullADJGraph()
+result = graphFunctions.getMinCut(graph, "good", "bad")
+print(len(result[0]))
+print(len(result[1]))
+
 # label_prop = labelProp.performLabelProp(graph, ['abaxial'], ['abducent'])

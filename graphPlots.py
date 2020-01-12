@@ -4,7 +4,10 @@ def plotWithLabels(graph):
     graph.vs()["label"] = graph.vs()["name"]
     ig.plot(graph)
 
-def plotWithLabelsCustom(graph):
+def plotWithLabelsCustom(graph, properties):
+    ig.plot(graph, **properties)
+
+def plotBigKKLayoutWithLabels(graph):
     layout = graph.layout("kk")
 
     visual_style = {}
@@ -16,7 +19,8 @@ def plotWithLabelsCustom(graph):
     visual_style["bbox"] = (1200, 1200)
     visual_style["margin"] = 20
 
-    ig.plot(graph, **visual_style)
+    plotWithLabelsCustom(graph, visual_style)
+
 
 def simplePlot(graph):
     ig.plot(graph)

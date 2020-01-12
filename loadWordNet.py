@@ -5,7 +5,7 @@ def getName(value):
     return value.name()
 
 def getNames(values):
-    return list(map(getName, values))
+    return helper.unique(map(getName, values))
 
 def getSynsetLemmas(synset):
     return synset.lemmas()

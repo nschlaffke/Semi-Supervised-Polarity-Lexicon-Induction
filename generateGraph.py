@@ -7,6 +7,7 @@ import graphFunctions
 import graphPlots
 import loadWordNet
 import labelProp
+import helper
 
 from sklearn.externals.joblib import Memory
 memory = Memory(location='./cache', verbose=0)
@@ -112,5 +113,6 @@ if __name__ == "__main__":
     # storeGraph("fullAdjGraph", g)
     good = wn.synset('good.a.01')
     synsets = getSynsetsDepth([good], 1)
+    print(helper.unique(loadWordNet.getNames(synsets)))
     g = getGraph(synsets)
-    graphPlots.plotWithLabelsCustom(g)
+    graphPlots.plotBigKKLayoutWithLabels(g)

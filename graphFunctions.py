@@ -30,6 +30,12 @@ def getMinCut(graph, s, t):
     t_id = graph.vs().find('bad').index
 
     graph.es()["capacity"] = [1 for i in range(graph.ecount())]
+
+    # we force that directly connected edges to one of the nodes should belong to the same node
+    corner_edges_ids = graph.incident(s_id) + graph.incident(t_id)
+    for edge_id in corner_edges_ids:
+        graph.es()[edge_id]["capacity"] = 10000
+
     min_cut = graph.maxflow(s_id, t_id, "capacity")
     return min_cut
 
