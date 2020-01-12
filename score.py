@@ -24,6 +24,9 @@ class FScore:
 
     def toList(self):
         return [self.name, self.precision, self.recall, self.fscore]
+
+    def print(self):
+        print(self.toDict())
         
 
 def fscore(score_name, real_positives, real_negatives, predicted_positives, predicted_negatives):
