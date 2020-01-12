@@ -1,52 +1,73 @@
 
 import helper
 import plotly.graph_objects as go
-import pandas as pd
-
 
 class FScore:
-    def __init__(self, precision, recall, name = ""):
+    def __init__(self, name, real_positives, real_negatives, predicted_positives, predicted_negatives):
+
         self.name = name
-        self.precision = precision
-        self.recall = recall
-        self.fscore = 2*precision*recall/(precision + recall)
+
+        true_positives = helper.intersection(real_positives, predicted_positives)
+        true_negatives = helper.intersection(real_negatives, predicted_negatives)
+        false_positives = helper.intersection(real_negatives, predicted_positives)
+        false_negatives = helper.intersection(real_positives, predicted_negatives)
+
+        self.precision = len(true_positives)/(len(true_positives) + len(false_positives))
+        self.recall = len(true_positives)/(len(true_positives) + len(false_negatives))
+        self.fscore = 2*self.precision*self.recall/(self.precision + self.recall)
+
+        self.positive_hit_ratio = len(true_positives)/len(predicted_positives)
+        self.negative_hit_ratio = len(true_negatives)/len(predicted_negatives)
+
+        self.positive_found_ratio = len(true_positives)/len(real_positives)
+        self.negative_found_ratio = len(true_negatives)/len(real_negatives)
     
     def setName(self, name):
         self.name = name
 
     def toDict(self):
-        return {
-            'name': self.name,
-            'precision': self.precision,
-            'recall': self.recall,
-            'fscore': self.fscore
-        }
+        return vars(self)
 
     def toList(self):
-        return [self.name, self.precision, self.recall, self.fscore]
+        return list(self.toDict().values())
+
+    def keys(self):
+        return self.toDict().keys()
 
     def print(self):
         print(self.toDict())
-        
+ 
 
 def fscore(score_name, real_positives, real_negatives, predicted_positives, predicted_negatives):
-    true_positives = helper.intersection(real_positives, predicted_positives)
-    false_positives = helper.intersection(real_negatives, predicted_positives)
-    false_negatives = helper.intersection(real_positives, predicted_negatives)
+    return FScore(score_name, real_positives, real_negatives, predicted_positives, predicted_negatives)
 
-    precision = len(true_positives)/(len(true_positives) + len(false_positives))
-    recall = len(true_positives)/(len(true_positives) + len(false_negatives))
+def correctedFscore(score_name, real_positives, real_negatives, predicted_positives, predicted_negatives, values):
+    # we want to filter the values for actually the possible ones, if the graph wasn't covering all the words
+    # it's normal we don't find them, they were not included in the graph in first place!
+    real_positives = helper.intersection(real_positives, values)
+    real_negatives = helper.intersection(real_negatives, values)
 
-    return FScore(precision, recall, score_name)
+    return fscore(score_name, real_positives, real_negatives, predicted_positives, predicted_negatives)
 
+
+def getValues(fscores, column):
+    return list(map(lambda x: '%.4f' % x.toDict()[column] if type(x.toDict()[column]) is float else x.toDict()[column], fscores))
 
 def saveFScoresTable(fscores, image_name):
 
-    fscores_dict = { fscores[i].name : fscores[i].toList() for i in range(0, len(fscores) ) }
-    fscores_DF = pd.DataFrame.from_dict(fscores_dict, orient='index', columns=['Name', 'Precision', 'Recall', 'Fscore'])
+    if(len(fscores) == 0):
+        print("Empty fscores provided")
+        return
 
-    table = go.Table(header=dict(values=list(fscores_DF.columns)), cells=dict(values=[fscores_DF.Name,
-        fscores_DF.Precision, fscores_DF.Recall, fscores_DF.Fscore]))
+    keys = list(fscores[0].keys())
+
+    matrix = [getValues(fscores, i) for i in keys]
+
+    table = go.Table(header=dict(values=keys), cells=dict(values=matrix))
 
     fig = go.Figure(table)
     fig.write_image("./results/"+ image_name + ".png")
+
+def printFscores(fscores):
+    for fscore in fscores:
+        print(fscore.toDict())
