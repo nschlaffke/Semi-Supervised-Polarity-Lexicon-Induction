@@ -65,7 +65,9 @@ def saveFScoresTable(fscores, image_name):
 
     table = go.Table(header=dict(values=keys), cells=dict(values=matrix))
 
-    fig = go.Figure(table)
+    layout = dict(width=1200)
+
+    fig = go.Figure(table, layout=layout)
     fig.write_image("./results/"+ image_name + ".png")
 
 def printFscores(fscores):
