@@ -4,34 +4,21 @@
 from nltk.corpus import wordnet as wn
 import igraph as ig
 
+import graphFunctions
 import generateGraph
-import loadWordNet
-import labelProp
+import score
+import helper
 
-from sklearn.externals.joblib import Memory
+real_positives = helper.readCsvWords("./LMDictCsv/LMDpositive.csv")
+real_negatives = helper.readCsvWords("./LMDictCsv/LMDnegative.csv")
 
-memory = Memory(cachedir='./cache', verbose=0)
-# possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
+graph = generateGraph.getFullADJGraph()
+(predicted_positives, predicted_negatives) = graphFunctions.getMinCut(graph, "good", "bad")
 
-@memory.cache
-def get_graph():
-    words_synsets = list(wn.all_synsets(wn.ADJ))
+fscores = []
+fscores.append(score.fscore("Simple Fscore", real_positives, real_negatives, predicted_positives, predicted_negatives))
+fscores.append(score.correctedFscore("Corrected Fscore", real_positives, real_negatives, predicted_positives, predicted_negatives, graph.vs()["name"]))
 
-    lemmas = loadWordNet.getAllLemmas(words_synsets)[:100] # TODO remove word limit
-
-    graph = generateGraph.createGraph(loadWordNet.getNames(lemmas))
-
-    for lemma in lemmas:
-        base_lemma_name = loadWordNet.getName(lemma)
-
-        synonyms = loadWordNet.findSynonymsLemma(lemma)
-
-        for synonym_name in loadWordNet.getNames(synonyms):
-            generateGraph.addEdgeIf(graph, base_lemma_name, synonym_name)
-    
-    graph.es['weight'] = [1]*len(graph.get_edgelist()) # TODO remove dummy way of adding weights
-    return graph
-
-graph = get_graph()
-
-label_prop = labelProp.performLabelProp(graph, ['abaxial'], ['abducent'])
+score.saveFScoresTable(fscores, "good")
+score.printFscores(fscores)
+# label_prop = labelProp.performLabelProp(graph, ['abaxial'], ['abducent'])
