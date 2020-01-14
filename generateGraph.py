@@ -37,7 +37,7 @@ def graphCache(function):
 
 # Graph functions   
 
-def getGraph(words_synsets):
+def getLemmasGraph(words_synsets):
     lemmas = loadWordNet.getAllLemmas(words_synsets)
 
     graph = graphFunctions.createGraph(loadWordNet.getNames(lemmas))
@@ -50,7 +50,18 @@ def getGraph(words_synsets):
         for synonym_name in loadWordNet.getNames(synonyms):
             graphFunctions.addEdgeIf(graph, base_lemma_name, synonym_name)
     
-    graph.es()['weight'] = [1]*len(graph.get_edgelist()) # TODO remove dummy way of adding weights
+    return graph
+
+def getSynsetGraph(words_synsets):
+
+    graph = graphFunctions.createGraph(loadWordNet.getNames(words_synsets))
+
+    for word_synset in words_synsets:
+        synonyms = loadWordNet.findRelatedSynsets(word_synset)
+
+        for synonym_name in loadWordNet.getNames(synonyms):
+            graphFunctions.addEdgeIf(graph, loadWordNet.getName(word_synset), synonym_name)
+    
     return graph
 
 class QueueObject:
@@ -80,6 +91,16 @@ def getSynsetsDepth(words_synsets, max_depth):
             
     
     return list(new_words_synsets)
+
+def getSynsetsFromWords(words):
+    new_words_synsets = set()
+    
+    for word in words:
+        synsets = loadWordNet.getSynsets(word)
+        for synset in synsets:
+            new_words_synsets.add(synset)
+
+    return list(new_words_synsets)
     
 # Get graph functions
 
@@ -87,19 +108,28 @@ def getSynsetsDepth(words_synsets, max_depth):
 def getFullGraph():
     # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
     words_synsets = list(wn.all_synsets())
-    return getGraph(words_synsets)
+    return getLemmasGraph(words_synsets)
 
 @graphCache
 def getFullADJGraph():
     # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
     words_synsets = list(wn.all_synsets(wn.ADJ))
-    return getGraph(words_synsets)
+    return getLemmasGraph(words_synsets)
 
 @graphCache
 def getSmallADJGraph():
     # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
     words_synsets = list(wn.all_synsets(wn.ADJ))[:500]
-    return getGraph(words_synsets)
+    return getLemmasGraph(words_synsets)
+
+@graphCache
+def getValidateOnlyWordsGraph():
+    real_positives = helper.readCsvWords("./LMDictCsv/LMDpositive.csv")
+    real_negatives = helper.readCsvWords("./LMDictCsv/LMDnegative.csv")
+
+    words_synsets = getSynsetsFromWords(real_negatives + real_positives)
+    getLemmasGraph(words_synsets)
+
 
 
 # Main for tests
@@ -114,5 +144,5 @@ if __name__ == "__main__":
     good = wn.synset('good.a.01')
     synsets = getSynsetsDepth([good], 1)
     print(helper.unique(loadWordNet.getNames(synsets)))
-    g = getGraph(synsets)
+    g = getLemmasGraph(synsets)
     graphPlots.plotBigKKLayoutWithLabels(g)
