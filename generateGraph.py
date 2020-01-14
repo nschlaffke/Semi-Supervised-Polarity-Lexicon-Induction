@@ -121,6 +121,9 @@ def getSmallADJGraph():
     words_synsets = list(wn.all_synsets(wn.ADJ))[:500]
     return getGraph(words_synsets)
 
+@graphCache
+def getAntonymAdjExt():
+    raise ValueError
 
 # Main for tests
 
