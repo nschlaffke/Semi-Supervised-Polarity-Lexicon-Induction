@@ -21,6 +21,9 @@ def findSynsetSynonymsSynset(synset):
     
     return helper.flatten_unique(synonyms)
 
+def findRelatedSynsets(synset):
+    return synset.similar_tos()
+
 def findSynonymsSynset(synset):
     synonyms = []
     for lemma in synset.lemmas():
@@ -36,6 +39,9 @@ def getAllLemmas(words_synsets):
     for word_synset in words_synsets:
         lemmas = lemmas + getSynsetNames(word_synset)
     return lemmas
+
+def getSynsets(lemma):
+    return wn.synsets(lemma)
 
 if __name__ == "__main__":
     good = wn.synset('good.a.01')

@@ -1,6 +1,11 @@
 
-import helper
 import plotly.graph_objects as go
+
+import graphFunctions
+import generateGraph
+import labelProp
+import minCut
+import helper
 
 class FScore:
     def __init__(self, name, real_positives, real_negatives, predicted_positives, predicted_negatives):
@@ -73,3 +78,24 @@ def saveFScoresTable(fscores, image_name):
 def printFscores(fscores):
     for fscore in fscores:
         print(fscore.toDict())
+
+if __name__ == "__main__":
+    
+    def checkDifferenceBetweenScores():
+        real_positives = helper.readCsvWords("./LMDictCsv/LMDpositive.csv")
+        real_negatives = helper.readCsvWords("./LMDictCsv/LMDnegative.csv")
+
+        graph = generateGraph.getFullADJGraph()
+
+        (predicted_positives, predicted_negatives) = minCut.getNonNeighboursEdgesMinCut(graph, "good", "bad")
+
+        # Check the differences between the scores, fscore doesn't change, but the ratio found changes
+        fscores = []
+        fscores.append(fscore("Simple", real_positives, real_negatives, predicted_positives, 
+            predicted_negatives))
+        fscores.append(correctedFscore("Corrected", real_positives, real_negatives, predicted_positives, 
+            predicted_negatives, graph.vs()["name"]))
+
+        saveFScoresTable(fscores, "scoresComparation")
+
+    checkDifferenceBetweenScores()
