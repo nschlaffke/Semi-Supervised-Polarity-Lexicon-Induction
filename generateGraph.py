@@ -42,7 +42,8 @@ def getGraph(words_synsets):
 
     graph = graphFunctions.createGraph(loadWordNet.getNames(lemmas))
 
-    for lemma in lemmas:
+    for i, lemma in enumerate(lemmas):
+        print (round((i/len(lemmas))*100, 2), end="\r")
         base_lemma_name = loadWordNet.getName(lemma)
 
         synonyms = loadWordNet.findSynonymsLemma(lemma)
