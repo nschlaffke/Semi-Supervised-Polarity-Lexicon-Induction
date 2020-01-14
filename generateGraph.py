@@ -53,6 +53,25 @@ def getGraph(words_synsets):
     graph.es()['weight'] = [1]*len(graph.get_edgelist()) # TODO remove dummy way of adding weights
     return graph
 
+def getAntonymGraph(words_synsets):
+    lemmas = loadWordNet.getAllLemmas(words_synsets)
+
+    graph = graphFunctions.createGraph(loadWordNet.getNames(lemmas))
+
+    for i, lemma in enumerate(lemmas):
+        print(round((i/len(lemmas))*100, 2), end="\r")
+        base_lemma_name = loadWordNet.getName(lemma)
+
+        antonyms = []
+        if lemma.antonyms():
+            antonyms = [x.name() for x in lemma.antonyms()]
+
+        for synonym_name in antonyms:
+            graphFunctions.addEdgeIf(graph, base_lemma_name, synonym_name)
+
+    new_edges = []
+    v = graph.vcount()
+    return graph
 class QueueObject:
   def __init__(self, depth, synset):
     self.depth = depth
