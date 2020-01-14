@@ -9,6 +9,7 @@ def getIndex(graph, word):
         return -1
 
 def performLabelProp(graph, seeds1, seeds2, n_iter=10000):
+    graph.es()['weight'] = [1]*len(graph.get_edgelist())
     LABELS = 3 # 2 classes + default class
     s1_id = [getIndex(graph, word) for word in seeds1]
     s2_id = [getIndex(graph, word) for word in seeds2]
