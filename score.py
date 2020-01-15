@@ -100,6 +100,14 @@ def getScores(name, realPos, realNeg, predPos, predNeg):
     entry[name] = report
     return entry
 
+
+def clearOutputs(pred_pos, pred_neg):
+    intersection = helper.intersection(pred_pos, pred_neg)
+    pred_pos = helper.substract(pred_pos, intersection)
+    pred_neg = helper.substract(pred_neg, intersection)
+
+    return (pred_pos, pred_neg)
+
 def printFscores(fscores):
     for fscore in fscores:
         print(fscore.toDict())
