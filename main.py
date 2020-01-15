@@ -18,16 +18,36 @@ import loadWordNet
 
 def performMinCut(graph, real_positives, real_negatives, fscores, isSynsetGraph):
 
+    good = loadWordNet.convertIf(["good"], isSynsetGraph)
+    bad = loadWordNet.convertIf(["bad"], isSynsetGraph)
+
+    if(isSynsetGraph):
+        # this only works for graphs that contain adjectives
+        good = ["good.a.01"]
+        bad = ["bad.a.01"]
+
     # Use the simplest min cut
     (predicted_positives, predicted_negatives, cluster) = minCut.getSimpleMinCut(
-        graph, loadWordNet.convertIf(["good"], isSynsetGraph), loadWordNet.convertIf(["bad"], isSynsetGraph))
+        graph, good, bad)
+
+    if(isSynsetGraph):
+        predicted_positives = loadWordNet.fromSynsetsToLemmas(predicted_positives)
+        predicted_negatives = loadWordNet.fromSynsetsToLemmas(predicted_negatives)
+
+    (predicted_positives, predicted_negatives) = score.clearOutputs(predicted_positives, predicted_negatives)
 
     fscores.append(newScore.getScores("Simple min-cut", real_positives, real_negatives,
                        predicted_positives, predicted_negatives))
     
     # Try to improve min-cut, adding a high capacity to adjacent edges, so they don't get cut
     (predicted_positives, predicted_negatives, cluster) = minCut.getNonNeighboursEdgesMinCut(
-        graph, loadWordNet.convertIf(["good"], isSynsetGraph), loadWordNet.convertIf(["bad"], isSynsetGraph))
+        graph, good, bad)
+
+    if(isSynsetGraph):
+        predicted_positives = loadWordNet.fromSynsetsToLemmas(predicted_positives)
+        predicted_negatives = loadWordNet.fromSynsetsToLemmas(predicted_negatives)
+    
+    (predicted_positives, predicted_negatives) = score.clearOutputs(predicted_positives, predicted_negatives)
 
     fscores.append(newScore.getScores("Non Neighbours min-cut", real_positives, real_negatives,
                        predicted_positives, predicted_negatives))
@@ -40,6 +60,12 @@ def performMinCut(graph, real_positives, real_negatives, fscores, isSynsetGraph)
     (predicted_positives, predicted_negatives, cluster) = minCut.getNonSubgraphEdgesMinCut(
         graph, positive_seed, negative_seed)
 
+    if(isSynsetGraph):
+        predicted_positives = loadWordNet.fromSynsetsToLemmas(predicted_positives)
+        predicted_negatives = loadWordNet.fromSynsetsToLemmas(predicted_negatives)
+    
+    (predicted_positives, predicted_negatives) = score.clearOutputs(predicted_positives, predicted_negatives)
+
     fscores.append(newScore.getScores("Non Subgraph min-cut", real_positives, real_negatives, predicted_positives,
                                          predicted_negatives))
     
@@ -47,11 +73,17 @@ def performMinCut(graph, real_positives, real_negatives, fscores, isSynsetGraph)
     (predicted_positives, predicted_negatives, cluster) = minCut.getNonSubgraphNonNeighboursEdgesMinCut(
         graph, positive_seed, negative_seed)
 
+    if(isSynsetGraph):
+        predicted_positives = loadWordNet.fromSynsetsToLemmas(predicted_positives)
+        predicted_negatives = loadWordNet.fromSynsetsToLemmas(predicted_negatives)
+    
+    (predicted_positives, predicted_negatives) = score.clearOutputs(predicted_positives, predicted_negatives)
+
     fscores.append(newScore.getScores("Non Neig-Sub min-cut", real_positives, real_negatives, predicted_positives,
                                          predicted_negatives))
 
 
-def performLabelProp(graph, real_positives, real_negatives, fscores, synsetGraph):
+def performLabelProp(graph, real_positives, real_negatives, fscores, isSynsetGraph):
     NUMBER_OF_SEEDS = 30
     print("Label propagation")
     negative_seed = np.random.choice(real_negatives, NUMBER_OF_SEEDS)
@@ -59,8 +91,14 @@ def performLabelProp(graph, real_positives, real_negatives, fscores, synsetGraph
 
     (predicted_positives, predicted_negatives) = labelProp.performLabelProp(
         graph,
-        negative_seed,
-        positive_seed)
+        loadWordNet.convertIf(negative_seed, isSynsetGraph),
+        loadWordNet.convertIf(positive_seed, isSynsetGraph))
+
+    if(isSynsetGraph):
+        predicted_positives = loadWordNet.fromSynsetsToLemmas(predicted_positives)
+        predicted_negatives = loadWordNet.fromSynsetsToLemmas(predicted_negatives)
+    
+    (predicted_positives, predicted_negatives) = score.clearOutputs(predicted_positives, predicted_negatives)
 
     fscores.append(newScore.getScores("LP", real_positives, real_negatives,
                        predicted_positives, predicted_negatives))
@@ -70,15 +108,19 @@ def performLabelProp(graph, real_positives, real_negatives, fscores, synsetGraph
 def performAllTests(graph_name, synsetGraph = False):
 
     graph = getattr(generateGraph, graph_name)()
-    graph = graphFunctions.getLargerConnectedComponent(graph)
+    # graph = graphFunctions.getLargerConnectedComponent(graph)
 
-    used_dictionary = graphFunctions.getVerticesNames(
-        graph, range(len(graph.vs())))
-    
-    real_positives = [word for word in helper.readCsvWords("./LMDictCsv/LMDpositive.csv")
-                    if word in used_dictionary]
-    real_negatives = [word for word in helper.readCsvWords("./LMDictCsv/LMDnegative.csv")
-                    if word in used_dictionary]
+    if(not synsetGraph):
+        used_dictionary = graphFunctions.getVerticesNames(
+            graph, range(len(graph.vs())))
+        
+        real_positives = [word for word in helper.readCsvWords("./LMDictCsv/LMDpositive.csv")
+                        if word in used_dictionary]
+        real_negatives = [word for word in helper.readCsvWords("./LMDictCsv/LMDnegative.csv")
+                        if word in used_dictionary]
+    else:
+        real_positives = helper.readCsvWords("./LMDictCsv/LMDpositive.csv")
+        real_negatives = helper.readCsvWords("./LMDictCsv/LMDnegative.csv")
 
     fscores = []
 
@@ -86,4 +128,4 @@ def performAllTests(graph_name, synsetGraph = False):
     performLabelProp(graph, real_positives, real_negatives, fscores, synsetGraph)
 
 
-performAllTests("getFullADJADVGraph")
+performAllTests("getFullADJADVSynsetGraph", True)

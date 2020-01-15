@@ -47,11 +47,14 @@ def getSynsets(lemma):
     return wn.synsets(lemma)
 
 def fromSynsetsToLemmas(synsets):
-    lemmas = set(synsets)
+    lemmas = set()
     for synset in synsets:
-        lemmas += getSynsetLemmas(synset)
+        try:
+            lemmas = lemmas | set(getSynsetLemmas(wn.synset(synset)))
+        except ValueError:
+            continue
         
-    return list(lemmas)
+    return getNames(list(lemmas))
 
 def convertIf(words, needsSynset):
     if(needsSynset):

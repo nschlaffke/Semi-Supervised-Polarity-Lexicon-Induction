@@ -10,6 +10,9 @@ def unique(matrix):
 def intersection(lst1, lst2): 
     return list(set(lst1) & set(lst2))
 
+def substract(lst1, lst2):
+    return list(set(lst1) - set(lst2))
+
 def readCsvWords(filepath):
     readed = []
 

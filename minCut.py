@@ -11,10 +11,6 @@ def getMinCut(graph, s, t):
     positive_names = graphFunctions.getVerticesNames(graph, min_cut[0])
     negative_names = graphFunctions.getVerticesNames(graph, min_cut[1])
 
-    if(len(positive_names) > 0 and "." in positive_names[0]):
-        positive_names = loadWordNet.fromSynsetsToLemmas(positive_names)
-        negative_names = loadWordNet.fromSynsetsToLemmas(negative_names)
-
     return (positive_names, negative_names, min_cut)
 
 # Min Cuts

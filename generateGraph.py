@@ -177,7 +177,7 @@ def getGoodBadDepthGraph():
 @graphCache
 def getFullADJADVSynsetGraph():
     # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
-    words_synsets = list(wn.all_synsets(wn.ADJ)) + list(wn.all_synsets(wn.ADV)) + [wn.synset('good.a.01')] + [wn.synset('bad.a.01')]
+    words_synsets = list(wn.all_synsets(wn.ADJ)) + list(wn.all_synsets(wn.ADV))
     return getSynsetGraph(words_synsets)
 
 @graphCache
