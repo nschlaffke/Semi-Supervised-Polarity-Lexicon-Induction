@@ -29,8 +29,9 @@ def performLabelProp(graph, seeds1, seeds2, n_iter=10000):
     V = len(graph.vs())
     Y = np.zeros((V, LABELS))
     Y[:,2] = 1 # Set all nodes to default label
-    for _ in range(n_iter):
-        Y[s1_id] = np.array([1,0,0])
+    for i in range(n_iter):
+        print (round((i/n_iter)*100, 2), end="\r")
+        Y[s1_id,:] = np.array([1,0,0])
         Y[s2_id,:] = np.array([0,1,0])
 
         # Step 2 - propagate
