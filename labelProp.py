@@ -39,7 +39,6 @@ def performLabelProp(graph, seeds1, seeds2, n_iter=10000):
         
         # Step 3 - row-normalize
         row_sums = Y.sum(axis=1, keepdims=True)
-        row_sums[row_sums==0] = 1
         Y /= row_sums
         
     labels = np.argmax(Y, axis=1)
