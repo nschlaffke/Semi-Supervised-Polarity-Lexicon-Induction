@@ -108,7 +108,7 @@ def performLabelProp(graph, real_positives, real_negatives, fscores, isSynsetGra
 def performAllTests(graph_name, synsetGraph = False):
 
     graph = getattr(generateGraph, graph_name)()
-    # graph = graphFunctions.getLargerConnectedComponent(graph)
+    graph = graphFunctions.removeDisconnectedVertices(graph)
 
     if(not synsetGraph):
         used_dictionary = graphFunctions.getVerticesNames(

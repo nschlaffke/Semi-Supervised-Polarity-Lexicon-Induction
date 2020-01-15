@@ -49,9 +49,9 @@ def getIds(values):
     return helper.unique(map(getId, values))
 
 def removeDisconnectedVertices(graph):
-    degs = np.array(graph.outdegree()) # = graph.indegree()
-    toRemove = list(graph.vs(np.where(degs==0)[0].tolist()))
-    graph.delete_vertices(toRemove)
+    graph.vs()['degree'] = graph.outdegree() # = graph.indegree()
+    to_remove = graph.vs().select(degree=0)
+    graph.delete_vertices(to_remove)
     return graph
 
 def getLargerConnectedComponent(graph):
