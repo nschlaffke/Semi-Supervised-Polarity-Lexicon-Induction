@@ -43,8 +43,8 @@ def performLabelProp(graph, seeds1, seeds2, n_iter=10000):
         Y /= row_sums
         
     labels = np.argmax(Y, axis=1)
-    positives = np.where(labels==0)[0]
-    negatives = np.where(labels==1)[0]
+    positives = np.where(labels==1)[0]
+    negatives = np.where(labels==0)[0]
     return getVerticesNames(graph, positives), getVerticesNames(graph, negatives)
 
 def getW(graph, undirected=True):
