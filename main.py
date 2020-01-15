@@ -32,14 +32,23 @@ def performMinCut(graph, real_positives, real_negatives, fscores):
                        predicted_positives, predicted_negatives))                   
 
 
+    NUMBER_OF_SEEDS = 50
+    negative_seed = np.random.choice(real_negatives, NUMBER_OF_SEEDS)
+    positive_seed = np.random.choice(real_positives, NUMBER_OF_SEEDS)
+
     # Try to improve min-cut, adding a subgraph of connected edges so they don't get cut
-    (predicted_positives, predicted_negatives) = minCut.getNonNeighboursEdgesMinCut(
-        graph, "good", "bad")
+    (predicted_positives, predicted_negatives) = minCut.getNonSubgraphEdgesMinCut(
+        graph, positive_seed, negative_seed)
 
-    fscores.append(score.correctedFscore("Non Neighbours min-cut", real_positives, real_negatives, predicted_positives,
-                                         predicted_negatives, graph.vs()["name"]))
+    fscores.append(newScore.getScores("Non Subgraph min-cut", real_positives, real_negatives, predicted_positives,
+                                         predicted_negatives))
+    
+    # Add both formulas
+    (predicted_positives, predicted_negatives) = minCut.getNonSubgraphNonNeighboursEdgesMinCut(
+        graph, positive_seed, negative_seed)
 
-    # Try with only the words
+    fscores.append(newScore.getScores("Non Neig-Sub min-cut", real_positives, real_negatives, predicted_positives,
+                                         predicted_negatives))
 
 
 def performLabelProp(graph, real_positives, real_negatives, fscores):
@@ -57,6 +66,10 @@ def performLabelProp(graph, real_positives, real_negatives, fscores):
                        predicted_positives, predicted_negatives))
 
 # MAIN
+
+# set the name outputs will have
+graph_name = "FullAdj"
+
 graph = generateGraph.getFullADJGraph()
 graph = graphFunctions.removeDisconnectedVertices(graph)
 

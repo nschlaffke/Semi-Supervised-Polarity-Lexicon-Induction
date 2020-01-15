@@ -84,6 +84,7 @@ def getAntonymGraph(words_synsets):
     new_edges = []
     v = graph.vcount()
     return graph
+
 class QueueObject:
   def __init__(self, depth, synset):
     self.depth = depth
@@ -121,6 +122,7 @@ def getSynsetsFromWords(words):
             new_words_synsets.add(synset)
 
     return list(new_words_synsets)
+
     
 # Get graph functions
 
