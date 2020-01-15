@@ -1,4 +1,5 @@
 import igraph as ig
+import numpy as np
 
 def checkVertexNameExists(graph, name):
     return len(graph.vs().select(name=name)) > 0
@@ -27,6 +28,12 @@ def addNodeIfNotExists(graph, name):
 
 def getVerticesNames(graph, vertices_ids):
     return ig.VertexSeq(graph, vertices_ids)["name"]
+
+def removeDisconnectedVertices(graph):
+    degs = np.array(graph.outdegree()) # = graph.indegree()
+    toRemove = list(graph.vs(np.where(degs==0)[0].tolist()))
+    graph.delete_vertices(toRemove)
+    return graph
 
 if __name__ == "__main__":
     False
