@@ -70,7 +70,7 @@ def performLabelProp(graph, real_positives, real_negatives, fscores, synsetGraph
 def performAllTests(graph_name, synsetGraph = False):
 
     graph = getattr(generateGraph, graph_name)()
-    graph = graphFunctions.getLargerConnectedComponent(graph)
+    graph = graphFunctions.removeDisconnectedVertices(graph)
 
     used_dictionary = graphFunctions.getVerticesNames(
         graph, range(len(graph.vs())))
