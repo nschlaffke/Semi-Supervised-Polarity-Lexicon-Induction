@@ -1,5 +1,7 @@
 import itertools
 import csv
+import numpy as np
+import graphFunctions
 
 def flatten_unique(matrix):
     return list(set(itertools.chain(*matrix)))
