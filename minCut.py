@@ -9,7 +9,7 @@ def getMinCut(graph, s, t):
 
     positive_names = graphFunctions.getVerticesNames(graph, min_cut[0])
     negative_names = graphFunctions.getVerticesNames(graph, min_cut[1])
-    return (positive_names, negative_names)
+    return (positive_names, negative_names, min_cut)
 
 # Min Cuts
 def getSimpleMinCut(graph, s, t):

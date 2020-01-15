@@ -139,6 +139,12 @@ def getFullADJGraph():
     return getLemmasGraph(words_synsets)
 
 @graphCache
+def getFullADJADVGraph():
+    # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
+    words_synsets = list(wn.all_synsets(wn.ADJ)) + list(wn.all_synsets(wn.ADV))
+    return getLemmasGraph(words_synsets)
+
+@graphCache
 def getSmallADJGraph():
     # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
     words_synsets = list(wn.all_synsets(wn.ADJ))[:500]
@@ -150,7 +156,15 @@ def getValidateOnlyWordsGraph():
     real_negatives = helper.readCsvWords("./LMDictCsv/LMDnegative.csv")
 
     words_synsets = getSynsetsFromWords(real_negatives + real_positives)
-    getLemmasGraph(words_synsets)
+    return getLemmasGraph(words_synsets)
+
+@graphCache
+def getGoodBadDepthGraph():
+    good = wn.synset('good.a.01')
+    bad = wn.synset('bad.a.01')
+
+    words_synsets = list(set(getSynsetsDepth(good, 6)) & set(getSynsetsDepth(bad, 6)))
+    return getLemmasGraph(words_synsets)
 
 
 @graphCache

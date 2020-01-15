@@ -54,5 +54,11 @@ def removeDisconnectedVertices(graph):
     graph.delete_vertices(toRemove)
     return graph
 
+def getLargerConnectedComponent(graph):
+    cl = graph.clusters()
+    lcc = cl.giant()
+    return lcc
+
+
 if __name__ == "__main__":
     False
