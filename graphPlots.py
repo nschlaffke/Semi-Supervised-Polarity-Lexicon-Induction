@@ -2,10 +2,10 @@ import igraph as ig
 
 def plotWithLabels(graph):
     graph.vs()["label"] = graph.vs()["name"]
-    ig.plot(graph)
+    return ig.plot(graph)
 
 def plotWithLabelsCustom(graph, properties):
-    ig.plot(graph, **properties)
+    return ig.plot(graph, **properties)
 
 def plotBigKKLayoutWithLabels(graph):
     layout = graph.layout("kk")
@@ -19,11 +19,14 @@ def plotBigKKLayoutWithLabels(graph):
     visual_style["bbox"] = (1200, 1200)
     visual_style["margin"] = 20
 
-    plotWithLabelsCustom(graph, visual_style)
+    return plotWithLabelsCustom(graph, visual_style)
 
 
 def simplePlot(graph):
-    ig.plot(graph)
+    return ig.plot(graph)
 
 def plotCommunity(communities):
-    ig.plot(communities, mark_groups = True)
+    return ig.plot(communities, mark_groups = True)
+
+def savePlot(plot, name):
+    plot.save(name)

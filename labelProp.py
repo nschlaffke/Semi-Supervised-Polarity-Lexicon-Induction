@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import sparse
 from graphFunctions import getVerticesNames
+import loadWordNet
 
 def getIndex(graph, word):
     try:
@@ -44,7 +45,15 @@ def performLabelProp(graph, seeds1, seeds2, n_iter=10000):
     labels = np.argmax(Y, axis=1)
     positives = np.where(labels==1)[0]
     negatives = np.where(labels==0)[0]
-    return getVerticesNames(graph, positives), getVerticesNames(graph, negatives)
+
+    positive_names = getVerticesNames(graph, positives)
+    negative_names = getVerticesNames(graph, negatives)
+
+    if(len(positive_names) > 0 and "." in positive_names[0]):
+        positive_names = loadWordNet.fromSynsetsToLemmas(positive_names)
+        negative_names = loadWordNet.fromSynsetsToLemmas(negative_names)
+
+    return (positive_names, negative_names) 
 
 def getW(graph, undirected=True):
     V = len(graph.vs())

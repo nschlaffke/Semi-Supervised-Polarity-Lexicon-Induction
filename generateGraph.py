@@ -57,7 +57,8 @@ def getSynsetGraph(words_synsets):
 
     graph = graphFunctions.createGraph(loadWordNet.getNames(words_synsets))
 
-    for word_synset in words_synsets:
+    for i, word_synset in enumerate(words_synsets):
+        print (round((i/len(words_synsets))*100, 2), end="\r")
         synonyms = loadWordNet.findRelatedSynsets(word_synset)
 
         for synonym_name in loadWordNet.getNames(synonyms):
@@ -90,25 +91,30 @@ class QueueObject:
     self.depth = depth
     self.synset = synset
 
-def getSynsetsDepth(words_synsets, max_depth):
+def getSynsetsDepth(words_synsets, max_depth, useSynsets = False):
 
     new_words_synsets = set(words_synsets)
     
     queue = queueClass.Queue()
     for synset in words_synsets:
-        queue.put(QueueObject(0, synset))
+        queue.put(QueueObject(1, synset))
     
     while(not queue.empty()):
+        print (queue.qsize(), end="\r")
         current = queue.get()
         
         if(current.depth > max_depth):
             continue
 
-        synonyms = loadWordNet.findSynsetSynonymsSynset(current.synset)
+        if(not useSynsets):
+            synonyms = loadWordNet.findSynsetSynonymsSynset(current.synset)
+        else:
+            synonyms = loadWordNet.findRelatedSynsets(current.synset)
 
         for synonym in synonyms:
-            queue.put(QueueObject(current.depth + 1, synonym))
-            new_words_synsets.add(synonym)
+            if(synonym not in new_words_synsets):
+                queue.put(QueueObject(current.depth + 1, synonym))
+                new_words_synsets.add(synonym)
             
     
     return list(new_words_synsets)
@@ -163,8 +169,25 @@ def getGoodBadDepthGraph():
     good = wn.synset('good.a.01')
     bad = wn.synset('bad.a.01')
 
-    words_synsets = list(set(getSynsetsDepth(good, 6)) & set(getSynsetsDepth(bad, 6)))
+    words_synsets = getSynsetsDepth([good, bad], 4)
     return getLemmasGraph(words_synsets)
+
+# Synset graphs
+
+@graphCache
+def getFullADJADVSynsetGraph():
+    # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
+    words_synsets = list(wn.all_synsets(wn.ADJ)) + list(wn.all_synsets(wn.ADV)) + [wn.synset('good.a.01')] + [wn.synset('bad.a.01')]
+    return getSynsetGraph(words_synsets)
+
+@graphCache
+def getGoodBadDepthSynsetGraph():
+    good = wn.synset('good.a.01')
+    bad = wn.synset('bad.a.01')
+
+    words_synsets = getSynsetsDepth([good, bad], 4, True)
+    return getSynsetGraph(words_synsets)
+    
 
 
 @graphCache
@@ -180,8 +203,15 @@ if __name__ == "__main__":
     # print(graphFunctions.shortestPath(g, "good", "bad"))
     # graphPlots.plotWithLabels(g.subgraph(graphFunctions.shortestPath(g, "good", "bad")[0]))
     # storeGraph("fullAdjGraph", g)
-    good = wn.synset('good.a.01')
-    synsets = getSynsetsDepth([good], 1)
-    print(helper.unique(loadWordNet.getNames(synsets)))
-    g = getLemmasGraph(synsets)
+
+    # good = wn.synset('good.a.01')
+    # synsets = getSynsetsDepth([good], 1)
+    # print(helper.unique(loadWordNet.getNames(synsets)))
+    # g = getLemmasGraph(synsets)
+    # graphPlots.plotBigKKLayoutWithLabels(g)
+
+    g = getGoodBadDepthGraph()
+    graphPlots.plotBigKKLayoutWithLabels(g)
+
+    g = getGoodBadDepthSynsetGraph()
     graphPlots.plotBigKKLayoutWithLabels(g)

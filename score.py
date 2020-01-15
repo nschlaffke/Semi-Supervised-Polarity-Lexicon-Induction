@@ -6,26 +6,27 @@ import generateGraph
 import labelProp
 import minCut
 import helper
+from sklearn.metrics import classification_report
 
 class FScore:
-    def __init__(self, name, real_positives, real_negatives, predicted_positives, predicted_negatives):
+    def __init__(self, name, report):
 
         self.name = name
 
-        true_positives = helper.intersection(real_positives, predicted_positives)
-        true_negatives = helper.intersection(real_negatives, predicted_negatives)
-        false_positives = helper.intersection(real_negatives, predicted_positives)
-        false_negatives = helper.intersection(real_positives, predicted_negatives)
+        true_positives = 1
+        true_negatives = 1
+        false_positives = 1
+        false_negatives =1 
 
         self.precision = len(true_positives)/(len(true_positives) + len(false_positives))
         self.recall = len(true_positives)/(len(true_positives) + len(false_negatives))
         self.fscore = 2*self.precision*self.recall/(self.precision + self.recall)
 
-        self.positive_hit_ratio = len(true_positives)/len(predicted_positives)
-        self.negative_hit_ratio = len(true_negatives)/len(predicted_negatives)
+        self.positive_hit_ratio = 1
+        self.negative_hit_ratio = 1
 
-        self.positive_found_ratio = len(true_positives)/len(real_positives)
-        self.negative_found_ratio = len(true_negatives)/len(real_negatives)
+        self.positive_found_ratio = 1
+        self.negative_found_ratio = 1
     
     def setName(self, name):
         self.name = name
@@ -43,17 +44,22 @@ class FScore:
         print(self.toDict())
  
 
-def fscore(score_name, real_positives, real_negatives, predicted_positives, predicted_negatives):
-    return FScore(score_name, real_positives, real_negatives, predicted_positives, predicted_negatives)
+def fscore(score_name, name, realPos, realNeg, predPos, predNeg):
+    intersection = sorted(list(set(realPos + realNeg) & set(predPos + predNeg)))
+    labelsPred = ['positive' if word in predPos else 'negative' for word in intersection]
+    labelsReal = ['positive' if word in realPos else 'negative' for word in intersection]
+    report = classification_report(labelsReal, labelsPred, output_dict=True)
+    print(classification_report(labelsReal, labelsPred))
 
-def correctedFscore(score_name, real_positives, real_negatives, predicted_positives, predicted_negatives, values):
-    # we want to filter the values for actually the possible ones, if the graph wasn't covering all the words
-    # it's normal we don't find them, they were not included in the graph in first place!
-    real_positives = helper.intersection(real_positives, values)
-    real_negatives = helper.intersection(real_negatives, values)
+    # We might have leave some unlabeled, so we count found ratio
+    positiveFound = 100*len(set(predPos) & set(realPos))/len(realPos)
+    negativeFound = 100*len(set(predNeg) & set(realNeg))/len(realNeg)
+    print('Positives found: %.2f %%' % (positiveFound))
+    print('Negatives found: %.2f %%' % (negativeFound))
+    report['positive']['found'] = positiveFound
+    report['negative']['found'] = negativeFound
 
-    return fscore(score_name, real_positives, real_negatives, predicted_positives, predicted_negatives)
-
+    return FScore(score_name, report)
 
 def getValues(fscores, column):
     return list(map(lambda x: '%.4f' % x.toDict()[column] if type(x.toDict()[column]) is float else x.toDict()[column], fscores))
@@ -75,27 +81,28 @@ def saveFScoresTable(fscores, image_name):
     fig = go.Figure(table, layout=layout)
     fig.write_image("./results/"+ image_name + ".png")
 
+def getScores(name, realPos, realNeg, predPos, predNeg):
+    print(name)
+    intersection = sorted(list(set(realPos + realNeg) & set(predPos + predNeg)))
+    labelsPred = ['positive' if word in predPos else 'negative' for word in intersection]
+    labelsReal = ['positive' if word in realPos else 'negative' for word in intersection]
+    report = classification_report(labelsReal, labelsPred, output_dict=True)
+    print(classification_report(labelsReal, labelsPred))
+
+    # We might have leave some unlabeled, so we count found ratio
+    positiveFound = 100*len(set(predPos) & set(realPos))/len(realPos)
+    negativeFound = 100*len(set(predNeg) & set(realNeg))/len(realNeg)
+    print('Positives found: %.2f %%' % (positiveFound))
+    print('Negatives found: %.2f %%' % (negativeFound))
+    report['positive']['found'] = positiveFound
+    report['negative']['found'] = negativeFound
+    entry = {}
+    entry[name] = report
+    return entry
+
 def printFscores(fscores):
     for fscore in fscores:
         print(fscore.toDict())
 
 if __name__ == "__main__":
-    
-    def checkDifferenceBetweenScores():
-        real_positives = helper.readCsvWords("./LMDictCsv/LMDpositive.csv")
-        real_negatives = helper.readCsvWords("./LMDictCsv/LMDnegative.csv")
-
-        graph = generateGraph.getFullADJGraph()
-
-        (predicted_positives, predicted_negatives) = minCut.getNonNeighboursEdgesMinCut(graph, "good", "bad")
-
-        # Check the differences between the scores, fscore doesn't change, but the ratio found changes
-        fscores = []
-        fscores.append(fscore("Simple", real_positives, real_negatives, predicted_positives, 
-            predicted_negatives))
-        fscores.append(correctedFscore("Corrected", real_positives, real_negatives, predicted_positives, 
-            predicted_negatives, graph.vs()["name"]))
-
-        saveFScoresTable(fscores, "scoresComparation")
-
-    checkDifferenceBetweenScores()
+    pass

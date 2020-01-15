@@ -1,5 +1,4 @@
 from sklearn.metrics import classification_report
-import plotly.graph_objects as go
 
 def getScores(name, realPos, realNeg, predPos, predNeg):
     print(name)

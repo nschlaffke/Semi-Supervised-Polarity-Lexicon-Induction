@@ -1,4 +1,5 @@
 import graphFunctions
+import loadWordNet
 
 # Base function
 def getMinCut(graph, s, t):
@@ -9,17 +10,22 @@ def getMinCut(graph, s, t):
 
     positive_names = graphFunctions.getVerticesNames(graph, min_cut[0])
     negative_names = graphFunctions.getVerticesNames(graph, min_cut[1])
+
+    if(len(positive_names) > 0 and "." in positive_names[0]):
+        positive_names = loadWordNet.fromSynsetsToLemmas(positive_names)
+        negative_names = loadWordNet.fromSynsetsToLemmas(negative_names)
+
     return (positive_names, negative_names, min_cut)
 
 # Min Cuts
 def getSimpleMinCut(graph, s, t):
     graph.es()["capacity"] = [1 for i in range(graph.ecount())]
-    return getMinCut(graph, s, t)
+    return getMinCut(graph, s[0], t[0])
 
 def getNonNeighboursEdgesMinCut(graph, s, t):
 
-    s_id = graph.vs().find(s).index
-    t_id = graph.vs().find(t).index
+    s_id = graph.vs().find(s[0]).index
+    t_id = graph.vs().find(t[0]).index
 
     graph.es()["capacity"] = [1 for i in range(graph.ecount())]
 
@@ -27,8 +33,7 @@ def getNonNeighboursEdgesMinCut(graph, s, t):
     corner_edges_ids = graph.incident(s_id) + graph.incident(t_id)
     setBigcapacity(graph, corner_edges_ids)
 
-
-    return getMinCut(graph, s, t)
+    return getMinCut(graph, s[0], t[0])
 
 def getNonSubgraphEdgesMinCut(graph, s, t):
 

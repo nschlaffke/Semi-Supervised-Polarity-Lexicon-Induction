@@ -13,27 +13,28 @@ import labelProp
 import minCut
 import newScore
 import graphPlots
+import loadWordNet
 
 
-def performMinCut(graph, real_positives, real_negatives, fscores):
+def performMinCut(graph, real_positives, real_negatives, fscores, isSynsetGraph):
 
     # Use the simplest min cut
     (predicted_positives, predicted_negatives, cluster) = minCut.getSimpleMinCut(
-        graph, "good", "bad")
+        graph, loadWordNet.convertIf(["good"], isSynsetGraph), loadWordNet.convertIf(["bad"], isSynsetGraph))
 
     fscores.append(newScore.getScores("Simple min-cut", real_positives, real_negatives,
                        predicted_positives, predicted_negatives))
     
     # Try to improve min-cut, adding a high capacity to adjacent edges, so they don't get cut
     (predicted_positives, predicted_negatives, cluster) = minCut.getNonNeighboursEdgesMinCut(
-        graph, "good", "bad")
+        graph, loadWordNet.convertIf(["good"], isSynsetGraph), loadWordNet.convertIf(["bad"], isSynsetGraph))
 
     fscores.append(newScore.getScores("Non Neighbours min-cut", real_positives, real_negatives,
                        predicted_positives, predicted_negatives))
 
     NUMBER_OF_SEEDS = 50
-    negative_seed = np.random.choice(real_negatives, NUMBER_OF_SEEDS)
-    positive_seed = np.random.choice(real_positives, NUMBER_OF_SEEDS)
+    negative_seed = loadWordNet.convertIf(np.random.choice(real_negatives, NUMBER_OF_SEEDS), isSynsetGraph)
+    positive_seed = loadWordNet.convertIf(np.random.choice(real_positives, NUMBER_OF_SEEDS), isSynsetGraph)
 
     # Try to improve min-cut, adding a subgraph of connected edges so they don't get cut
     (predicted_positives, predicted_negatives, cluster) = minCut.getNonSubgraphEdgesMinCut(
@@ -50,7 +51,7 @@ def performMinCut(graph, real_positives, real_negatives, fscores):
                                          predicted_negatives))
 
 
-def performLabelProp(graph, real_positives, real_negatives, fscores):
+def performLabelProp(graph, real_positives, real_negatives, fscores, synsetGraph):
     NUMBER_OF_SEEDS = 30
     print("Label propagation")
     negative_seed = np.random.choice(real_negatives, NUMBER_OF_SEEDS)
@@ -66,7 +67,7 @@ def performLabelProp(graph, real_positives, real_negatives, fscores):
 
 # MAIN
 
-def performAllTests(graph_name):
+def performAllTests(graph_name, synsetGraph = False):
 
     graph = getattr(generateGraph, graph_name)()
     graph = graphFunctions.getLargerConnectedComponent(graph)
@@ -81,8 +82,8 @@ def performAllTests(graph_name):
 
     fscores = []
 
-    performMinCut(graph, real_positives, real_negatives, fscores)
-    performLabelProp(graph, real_positives, real_negatives, fscores)
+    performMinCut(graph, real_positives, real_negatives, fscores, synsetGraph)
+    performLabelProp(graph, real_positives, real_negatives, fscores, synsetGraph)
 
 
 performAllTests("getFullADJADVGraph")
