@@ -131,6 +131,11 @@ def getSynsetsFromWords(words):
 
     
 # Get graph functions
+@graphCache
+def getFullAdjAdvAntonymGraph():
+    # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
+    words_synsets = list(wn.all_synsets(wn.ADJ)) + list(wn.all_synsets(wn.ADV))
+    return getAntonymGraph(words_synsets)
 
 @graphCache
 def getFullGraph():
@@ -187,12 +192,9 @@ def getGoodBadDepthSynsetGraph():
 
     words_synsets = getSynsetsDepth([good, bad], 4, True)
     return getSynsetGraph(words_synsets)
-    
-
-
 @graphCache
-def getAntonymAdjExt():
-    raise ValueError
+def getFullAdjAdvAntExtGraph():
+    raise FileNotFoundError
 
 # Main for tests
 

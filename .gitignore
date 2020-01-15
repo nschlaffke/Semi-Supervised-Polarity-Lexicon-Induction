@@ -139,3 +139,11 @@ i.vscode/*
 cache/
 
 todo.txt
+.idea/misc.xml
+.idea/modules.xml
+.idea/Semi-Supervised-Polarity-Lexicon-Induction.iml
+.idea/vcs.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/libraries/R_User_Library.xml
+.Rproj.user
+antonym_graphs_generation/antonym_graphs_generation.Rproj
