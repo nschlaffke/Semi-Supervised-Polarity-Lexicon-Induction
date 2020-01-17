@@ -177,7 +177,30 @@ def getGoodBadDepthGraph():
     words_synsets = getSynsetsDepth([good, bad], 4)
     return getLemmasGraph(words_synsets)
 
+@graphCache
+def getSmallGoodBadDepthGraph():
+    good = wn.synset('good.a.01')
+    bad = wn.synset('bad.a.01')
+
+    words_synsets = getSynsetsDepth([good, bad], 2)
+    return getLemmasGraph(words_synsets)
+
+@graphCache
+def getVerySmallGoodBadDepthGraph():
+    good = wn.synset('good.a.01')
+    bad = wn.synset('bad.a.01')
+
+    words_synsets = getSynsetsDepth([good, bad], 1)
+    return getLemmasGraph(words_synsets)
+    
+
 # Synset graphs
+
+@graphCache
+def getFullADJSynsetGraph():
+    # possible word types: ADJ, ADJ_SAT, ADV, NOUN, VERB
+    words_synsets = list(wn.all_synsets(wn.ADJ))
+    return getSynsetGraph(words_synsets)
 
 @graphCache
 def getFullADJADVSynsetGraph():
@@ -192,6 +215,23 @@ def getGoodBadDepthSynsetGraph():
 
     words_synsets = getSynsetsDepth([good, bad], 4, True)
     return getSynsetGraph(words_synsets)
+
+@graphCache
+def getSmallGoodBadDepthSynsetGraph():
+    good = wn.synset('good.a.01')
+    bad = wn.synset('bad.a.01')
+
+    words_synsets = getSynsetsDepth([good, bad], 2, True)
+    return getSynsetGraph(words_synsets)
+
+@graphCache
+def getVerySmallGoodBadDepthSynsetGraph():
+    good = wn.synset('good.a.01')
+    bad = wn.synset('bad.a.01')
+
+    words_synsets = getSynsetsDepth([good, bad], 1, True)
+    return getSynsetGraph(words_synsets)
+
 @graphCache
 def getFullAdjAdvAntExtGraph():
     raise FileNotFoundError

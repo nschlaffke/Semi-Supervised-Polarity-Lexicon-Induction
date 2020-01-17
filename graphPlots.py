@@ -26,7 +26,7 @@ def simplePlot(graph):
     return ig.plot(graph)
 
 def plotCommunity(communities):
-    return ig.plot(communities, mark_groups = True)
+    return ig.plot(communities, mark_groups = True,)
 
 def savePlot(plot, name):
-    plot.save(name)
+    plot.save('plots/' + name + ".png")

@@ -36,8 +36,6 @@ def getSeed(graph, size, real_positives, real_negatives):
         return ['good'], ['bad']
 
     np.random.seed(size)
-    used_dictionary = graphFunctions.getVerticesNames(
-        graph, range(len(graph.vs())))
 
     chosen_pos = np.random.choice(real_positives, size=size)
     chosen_neg = np.random.choice(real_negatives, size=size)
