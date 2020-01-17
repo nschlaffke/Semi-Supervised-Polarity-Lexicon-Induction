@@ -28,6 +28,13 @@ def lemmasVsSynsetsGraph():
     graphPlot = graphPlots.plotWithLabels(smallLemmasGraph)
     graphPlots.savePlot(graphPlot, "smallLemmasGraph")
 
+    synsets = loadWordNet.findSynonymsSynsetsLemmaName("bad")
+    for synset in synsets:
+        lemmas = loadWordNet.getNames(loadWordNet.getSynsetLemmas(synset))
+        if('big' in lemmas):
+            print(loadWordNet.getName(synset))
+            print(lemmas)
+
     smallSynsetGraph = generateGraph.getSmallGoodBadDepthSynsetGraph()
     graphPlot = graphPlots.plotWithLabels(smallSynsetGraph)
     graphPlots.savePlot(graphPlot, "smallSynsetGraph")
@@ -156,4 +163,5 @@ def performAllTests(graph_name, synsetGraph=False):
 
 SEED_SIZE = 20
 # performAllTests("getFullADJADVGraph")
-lemmasVsSynsetsGraph()
+# lemmasVsSynsetsGraph()
+

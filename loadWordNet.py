@@ -30,6 +30,10 @@ def findSynonymsSynset(synset):
         synonyms.append(findSynonymsLemma(lemma))
     return helper.flatten_unique(synonyms)
 
+def findSynonymsSynsetsLemmaName(lemmaName):
+    synonymsSynset = wn.synsets(lemmaName)
+    return synonymsSynset
+
 def findSynonymsLemma(lemma):
     synonymsSynset = wn.synsets(lemma.name())
     return helper.flatten_unique(list(map(getSynsetLemmas, synonymsSynset)))
