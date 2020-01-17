@@ -53,6 +53,8 @@ def lemmasVsSynsetsGraph():
 def performMinCut(graph, real_positives, real_negatives, original_positives, original_negatives, fscores, isSynsetGraph):
     positive_seed, negative_seed = helper.getSeed(graph, SEED_SIZE, real_positives, real_negatives)
 
+    real_positives = helper.exclude(real_positives, positive_seed)
+    real_negatives = helper.exclude(real_negatives, negative_seed)
     good = loadWordNet.convertIf(["good"], isSynsetGraph)
     bad = loadWordNet.convertIf(["bad"], isSynsetGraph)
 
@@ -118,6 +120,8 @@ def performLabelProp(graph, real_positives, real_negatives, original_positives, 
     print("Label propagation")
     positive_seed, negative_seed = helper.getSeed(graph, SEED_SIZE, real_positives, real_negatives)
 
+    real_positives = helper.exclude(real_positives, positive_seed)
+    real_negatives = helper.exclude(real_negatives, negative_seed)
     (predicted_positives, predicted_negatives) = labelProp.performLabelProp(
         graph,
         loadWordNet.convertIf(negative_seed, isSynsetGraph),

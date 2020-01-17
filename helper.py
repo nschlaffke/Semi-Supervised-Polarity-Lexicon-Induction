@@ -32,7 +32,7 @@ def getSeed(graph, size, real_positives, real_negatives):
     """
         Return the same words for same graph and same
     """
-    if size == 2 and 'good' in real_positives and 'bad' in real_negatives:
+    if size == 1 and 'good' in real_positives and 'bad' in real_negatives:
         return ['good'], ['bad']
 
     np.random.seed(size)
@@ -41,3 +41,5 @@ def getSeed(graph, size, real_positives, real_negatives):
     chosen_neg = np.random.choice(real_negatives, size=size)
 
     return chosen_pos.tolist(), chosen_neg.tolist()
+def exclude(source, to_exclude):
+    return [word for word in source if not(word in to_exclude)]
