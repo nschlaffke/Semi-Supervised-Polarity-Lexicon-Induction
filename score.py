@@ -52,18 +52,18 @@ def fscore(score_name, realPos, realNeg, origPos, origNeg, predPos, predNeg):
     print(classification_report(labelsReal, labelsPred))
 
     # We might have leave some unlabeled, so we count found ratio
-    positiveFound = 100*len(set(predPos) & set(realPos))/len(realPos)
-    negativeFound = 100*len(set(predNeg) & set(realNeg))/len(realNeg)
+    positiveFound = len(set(predPos) & set(realPos))/len(realPos)
+    negativeFound = len(set(predNeg) & set(realNeg))/len(realNeg)
     
-    realPositiveFound = 100*len(set(predPos) & set(origPos))/len(origPos)
-    realNegativeFound = 100*len(set(predPos) & set(origPos))/len(origPos)
+    realPositiveFound = len(set(predPos) & set(origPos))/len(origPos)
+    realNegativeFound = len(set(predNeg) & set(origPos))/len(origPos)
 
     # print('Positives found: %.2f %%' % (positiveFound))
     # print('Negatives found: %.2f %%' % (negativeFound))
-    report['positive']['found'] = '{0:.2f}'.format(positiveFound)
-    report['negative']['found'] = '{0:.2f}'.format(negativeFound)
-    report['positive']['original_found'] = '{0:.2f}'.format(realPositiveFound)
-    report['negative']['original_found'] = '{0:.2f}'.format(realNegativeFound)
+    report['positive']['found'] = '{0:.3f}'.format(positiveFound)
+    report['negative']['found'] = '{0:.3f}'.format(negativeFound)
+    report['positive']['original_found'] = '{0:.3f}'.format(realPositiveFound)
+    report['negative']['original_found'] = '{0:.3f}'.format(realNegativeFound)
 
     return FScore(score_name, report)
 

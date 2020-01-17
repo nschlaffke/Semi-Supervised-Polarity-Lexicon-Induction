@@ -32,7 +32,14 @@ def getEdgesBetween(graph, vertices_names):
     edges_index = list()
     
     for base_vertex_name in vertices_names:
+
+        if(not checkVertexNameExists(graph, base_vertex_name)):
+            continue
+
         for vertex_name in vertices_names:
+            if(not checkVertexNameExists(graph, vertex_name)):
+                continue
+
             if base_vertex_name != vertex_name:
                 edge_index = graph.get_eid(base_vertex_name, vertex_name, directed=False, error=False)
                 if(edge_index != -1):

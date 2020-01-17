@@ -50,6 +50,7 @@ def lemmasVsSynsetsGraph():
     graphPlots.savePlot(graphPlot, "shortestPathSynsetGraph")
 
 
+
 def performMinCut(graph, real_positives, real_negatives, original_positives, original_negatives, fscores, isSynsetGraph):
     positive_seed, negative_seed = helper.getSeed(graph, SEED_SIZE, real_positives, real_negatives)
 
@@ -59,7 +60,10 @@ def performMinCut(graph, real_positives, real_negatives, original_positives, ori
     bad = loadWordNet.convertIf(["bad"], isSynsetGraph)
 
     if(isSynsetGraph):
-        # this only works for graphs that contain adjectives
+        positive_seed = loadWordNet.convertIf(positive_seed, isSynsetGraph)
+        negative_seed = loadWordNet.convertIf(negative_seed, isSynsetGraph)
+
+        # this only works for graphs that contains adjectives
         good = ["good.a.01"]
         bad = ["bad.a.01"]
 
@@ -92,7 +96,7 @@ def performMinCut(graph, real_positives, real_negatives, original_positives, ori
 
     # Try to improve min-cut, adding a subgraph of connected edges so they don't get cut
     (predicted_positives, predicted_negatives, cluster) = minCut.getNonSubgraphEdgesMinCut(
-        graph, positive_seed, negative_seed)
+        graph, positive_seed, negative_seed, good, bad)
 
     if(isSynsetGraph):
         predicted_positives = loadWordNet.fromSynsetsToLemmas(predicted_positives)
@@ -105,7 +109,7 @@ def performMinCut(graph, real_positives, real_negatives, original_positives, ori
 
     # Add both formulas
     (predicted_positives, predicted_negatives, cluster) = minCut.getNonSubgraphNonNeighboursEdgesMinCut(
-        graph, positive_seed, negative_seed)
+        graph, positive_seed, negative_seed, good, bad)
 
     if(isSynsetGraph):
         predicted_positives = loadWordNet.fromSynsetsToLemmas(predicted_positives)
@@ -166,6 +170,6 @@ def performAllTests(graph_name, synsetGraph=False):
     score.saveFScoresTable(fscores, graph_name)
 
 SEED_SIZE = 20
-# performAllTests("getFullADJADVGraph")
+performAllTests("getFullADJADVSynsetGraph", True)
 # lemmasVsSynsetsGraph()
 

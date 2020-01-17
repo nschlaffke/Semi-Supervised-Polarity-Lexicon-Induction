@@ -31,32 +31,36 @@ def getNonNeighboursEdgesMinCut(graph, s, t):
 
     return getMinCut(graph, s[0], t[0])
 
-def getNonSubgraphEdgesMinCut(graph, s, t):
+def getNonSubgraphEdgesMinCut(graph, group1, group2, s, t):
 
     graph.es()["capacity"] = [1 for i in range(graph.ecount())]
 
     # we force that directly connected edges to one of the nodes should belong to the same cluster
-    corner_edges_ids = graphFunctions.getEdgesBetween(graph, s) + graphFunctions.getEdgesBetween(graph, t)
+    corner_edges_ids = graphFunctions.getEdgesBetween(graph, group1) + graphFunctions.getEdgesBetween(graph, group2)
     setBigcapacity(graph, corner_edges_ids)
 
     return getMinCut(graph, s[0], t[0])
 
-def getNonSubgraphNonNeighboursEdgesMinCut(graph, s, t):
+def getNonSubgraphNonNeighboursEdgesMinCut(graph, group1, group2, s, t):
 
     graph.es()["capacity"] = [1 for i in range(graph.ecount())]
 
     corner_edges_ids = list()
 
-    for i in s:
+    for i in group1:
+        if(not graphFunctions.checkVertexNameExists(graph, i)):
+            continue
+
         i_id = graph.vs().find(i).index
         corner_edges_ids += graph.incident(i_id)
 
-    for i in t:
+    for i in group2:
+        if(not graphFunctions.checkVertexNameExists(graph, i)):
+            continue
         i_id = graph.vs().find(i).index
         corner_edges_ids += graph.incident(i_id)
 
     # we force that directly connected edges to one of the nodes should belong to the same cluster
-    corner_edges_ids += graphFunctions.getEdgesBetween(graph, s) + graphFunctions.getEdgesBetween(graph, t)
     setBigcapacity(graph, corner_edges_ids)
 
     return getMinCut(graph, s[0], t[0])

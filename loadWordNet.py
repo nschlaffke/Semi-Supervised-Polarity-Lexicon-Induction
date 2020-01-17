@@ -45,7 +45,9 @@ def getAllLemmas(words_synsets):
     return lemmas
 
 def getSynset(lemma):
-    return wn.synsets(lemma)[0]
+    if(len(wn.synsets(lemma)) > 0):
+        return wn.synsets(lemma)[0]
+    return None
 
 def getSynsets(lemma):
     return wn.synsets(lemma)
@@ -62,7 +64,7 @@ def fromSynsetsToLemmas(synsets):
 
 def convertIf(words, needsSynset):
     if(needsSynset):
-        words = list(map(getSynset, words))
+        words = helper.flatten_unique(list(map(getNames, map(getSynsets, words))))
     return words
 
 if __name__ == "__main__":
